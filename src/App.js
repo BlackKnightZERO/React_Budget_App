@@ -1,18 +1,44 @@
 // import logo from './logo.svg';
 // import './App.css';
 
+import { useState } from "react";
 import { Button, Container, Stack } from "react-bootstrap";
+import AddBudgetModal from "./components/AddBudgetModal";
+import AddExpenseModal from "./components/AddExpenseModal";
 import BudgetCard from "./components/BudgetCard";
+import { useBudgets, UNCATEGORIZED_BUDGET_ID } from "./context/BudgetsContext";
 
 function App() {
+
+  const [showAddBudgetModal, setShowAddBudgetModal] = useState(false)
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false)
+  const [addExpenseModalBudgetId, setAddExpenseModalBudgetId] = useState()
+
+  const { budgets, expenses, getBudgetExpenses } = useBudgets()
+  
+
+  const handleAddBudgetModal = () => {
+    setShowAddBudgetModal(true)
+  }
+
+  const handleClose = () => {
+    setShowAddBudgetModal(false)
+    setShowAddExpenseModal(false)
+  }
+
+  const handleAddExpenseModal = (budgetId) => {
+    // console.log(budgetId)
+    setShowAddExpenseModal(true)
+    setAddExpenseModalBudgetId(budgetId)
+  }
 
   return (
     <div className="App">
       <Container className="my-4">
         <Stack direction="horizontal" gap="2" className="mb-4">
           <h1 className="me-auto">Budgets</h1>
-          <Button variant="primary">Add Budget</Button>
-          <Button variant="outline-primary">Add Expense</Button>
+          <Button variant="primary" onClick={ handleAddBudgetModal }>Add Budget</Button>
+          <Button variant="outline-primary" onClick={ () => handleAddExpenseModal(UNCATEGORIZED_BUDGET_ID) }>Add Expense</Button>
         </Stack>
 
         <div style={{ 
@@ -21,15 +47,29 @@ function App() {
           gap:"1rem", 
           alignItems:"flex-start" 
           }}>
+          {
+            budgets && budgets.map(budget => {
 
-          <BudgetCard name="Entertainment" 
-            amount={1200} 
-            max={1000} 
-            gray 
-          />
+              const amount = getBudgetExpenses(budget.id).reduce((total, expense) => total + expense.amount, 0) 
+              
+              return (
+                <BudgetCard name={ budget.name } 
+                  key={ budget.id }
+                  amount={ amount } 
+                  max={ budget.max }  
+                  handleAddExpenseModal={ () => handleAddExpenseModal(budget.id) }
+                />
+                )
+              })
+          }    
+          
         </div>
 
       </Container>
+
+      <AddBudgetModal show={ showAddBudgetModal } handleClose = { handleClose } ></AddBudgetModal>
+      <AddExpenseModal show={ showAddExpenseModal } handleClose = { handleClose } defaultBudgetId={ addExpenseModalBudgetId }></AddExpenseModal>
+
     </div>
   );
 }
