@@ -1,3 +1,7 @@
+REACT_BUDGET_APP : Manage your Budgets & Expenses
+
+![react_budget_app](https://user-images.githubusercontent.com/29349064/156800575-46872776-ba9c-4286-9e21-69cfd79b1778.png)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
